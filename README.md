@@ -3,5 +3,6 @@
 - This repo will contain:
 - Midterm project proposal
 - Datasets that I use
-- Project document
-- R codes
+- Project main report document
+- Appendix
+- Supplement
