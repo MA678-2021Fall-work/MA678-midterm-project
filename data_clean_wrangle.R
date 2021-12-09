@@ -343,3 +343,11 @@ df_aver_final$Stage <- as.factor(df_aver_final$Stage)
 
 df_rs_aver_final$Season <- as.factor(df_rs_aver_final$Season)
 df_rs_aver_final$Stage <- as.factor(df_rs_aver_final$Stage)
+
+df_ps_aver_final$Season <- as.factor(df_ps_aver_final$Season)
+df_ps_aver_final$Stage <- as.factor(df_ps_aver_final$Stage)
+
+
+
+
+

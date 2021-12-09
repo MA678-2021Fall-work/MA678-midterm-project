@@ -16,22 +16,54 @@ source("data_clean_wrangle.R")
 source("visual_functions.R")
 ```
 
+## Abstract:
+
+
+## Introduction:
+
+
+
+## Method
+
+### Data Cleaning and Processing:
+
+
+
+### Exploratory Data Analysis:
+
+```{r}
+#three_point_attempt_plot(df_rs_aver_final) + ggtitle("Number of 3 Points attempt per game distribution from season 2010-2011 to season 2019-2020")
+```
+
+### Model Fitting:
+
+
 ## Result:
 
 # Model build:
 
 Indicator select:
-Season, Stage, MPG, GP, PFPG, X3PAPG, height_cm, weight_kg, Age
+Season, MPG, GP, PFPG, X3PAPG, height_cm, weight_kg, Age, PER, PFPG
+
 ```{r}
 # Standardize the outcome:
-fit1 <- lmer(injury_level ~ height_cm + weight_kg + Age + MPG + X3PAPG + GP + PER + (1|Season), df_rs_aver_final)
+fit1 <- lmer(injury_level ~ height_cm + weight_kg + Age + MPG + X3PAPG + GP + PFPG + PER + (1|Season), df_rs_aver_final) 
 
 summary(fit1)
+coefficients(fit1)
+```
 
+
+
+### Model Validation:
+
+```{r echo=FALSE, fig.height=2.5, fig.width=6, fig.cap="Residual plot and Q-Q plot."}
 re <- plot(fit1)
 qq <- qqmath(fit1)
 grid.arrange(re,qq,nrow=1)
 ```
+
+
 
 ```{r echo=FALSE,fig.height=2, fig.width=4, fig.cap="Residuals vs Leverage."}
 ggplot(data.frame(lev=hatvalues(fit1),pearson=residuals(fit1,type="pearson")),
@@ -39,4 +71,18 @@ ggplot(data.frame(lev=hatvalues(fit1),pearson=residuals(fit1,type="pearson")),
     geom_point() +
     theme_bw()
 ```
+
+## Discussion:
+
+
+
+## Citation:
+
+
+
+
+
+\newpage
+## Appendix
+### More EDA
 
