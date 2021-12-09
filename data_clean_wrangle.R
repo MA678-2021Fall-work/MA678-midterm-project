@@ -5,7 +5,6 @@ library(viridis)
 library(hrbrthemes)
 library(mosaic)
 library(readr)
-library(dplyr)
 library(lubridate)
 library(tibble)
 
@@ -331,4 +330,16 @@ df_rs_final <- left_join(rs_playerstats_1020, df_rs_combine, by = "join_c") %>% 
 df_ps_final <- left_join(ps_playerstats_1020, df_ps_combine, by = "join_c") %>% select(1:22,27,29,30,35,38)
 df_rs_aver_final <- left_join(rs_aver_playerstats_1020, df_rs_combine, by = "join_c") 
 df_ps_aver_final <- left_join(ps_aver_playerstats_1020, df_ps_combine, by = "join_c")
+
+df_final <- rbind(df_rs_final, df_ps_final)
+df_aver_final <- rbind(df_rs_aver_final,df_ps_aver_final)
+
+df_final$Season <- as.factor(df_final$Season)
+df_final$Stage <- as.factor(df_final$Stage)
  
+df_aver_final$Season <- as.factor(df_aver_final$Season)
+df_aver_final$Stage <- as.factor(df_aver_final$Stage)
+
+
+df_rs_aver_final$Season <- as.factor(df_rs_aver_final$Season)
+df_rs_aver_final$Stage <- as.factor(df_rs_aver_final$Stage)

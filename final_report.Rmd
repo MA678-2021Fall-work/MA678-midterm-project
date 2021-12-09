@@ -1,0 +1,42 @@
+---
+title: "Final Report for MA678 Project"
+author: "Daniel(Chen) Xu BUID:U49903384"
+date: "12/10/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning=F,message = F,echo=F,highlight=F)
+knitr::opts_chunk$set(fig.width=8, fig.height=6,fig.align = "center") 
+pacman::p_load("tidyverse","tidyr","knitr","dplyr","viridis","hrbrthemes","mosaic","readr","lubridate","tibble","lme4","rstanarm","gridExtra")
+```
+
+```{r}
+source("data_clean_wrangle.R")
+source("visual_functions.R")
+```
+
+## Result:
+
+# Model build:
+
+Indicator select:
+Season, Stage, MPG, GP, PFPG, X3PAPG, height_cm, weight_kg, Age
+```{r}
+# Standardize the outcome:
+fit1 <- lmer(injury_level ~ height_cm + weight_kg + Age + MPG + X3PAPG + GP + PER + (1|Season), df_rs_aver_final)
+
+summary(fit1)
+
+re <- plot(fit1)
+qq <- qqmath(fit1)
+grid.arrange(re,qq,nrow=1)
+```
+
+```{r echo=FALSE,fig.height=2, fig.width=4, fig.cap="Residuals vs Leverage."}
+ggplot(data.frame(lev=hatvalues(fit1),pearson=residuals(fit1,type="pearson")),
+      aes(x=lev,y=pearson)) +
+    geom_point() +
+    theme_bw()
+```
+
