@@ -267,17 +267,68 @@ ps_injuries <- subset(only_injuries, only_injuries$Stage == "Playoffs")
 
 # join injury and playerstats for further analysis and clean:
 
-df_rs <- left_join(rs_playerstats_1020, rs_injuries, by = "join_c") %>% select(1:22, 27,29,30,43)
+df_rs <- left_join(rs_playerstats_1020, rs_injuries, by = "join_c") %>% select(1:22, 27,29,30,37,43)
 df_rs$body_part[is.na(df_rs$body_part)] <- "none"
 
-df_ps <- left_join(ps_playerstats_1020, ps_injuries, by = "join_c") %>% select(1:22, 27,29,30,43)
+df_ps <- left_join(ps_playerstats_1020, ps_injuries, by = "join_c") %>% select(1:22, 27,29,30,37,43)
 df_ps$body_part[is.na(df_ps$body_part)] <- "none"
 
-average_df_rs <- left_join(rs_aver_playerstats_1020, rs_injuries, by = "join_c") %>% select(1:28,35)
-average_df_rs$body_part[is.na(average_df_rs$body_part)] <- "none"
 
-average_df_ps <- left_join(ps_aver_playerstats_1020, ps_injuries, by = "join_c") %>% select(1:28,35)
-average_df_ps$body_part[is.na(average_df_ps$body_part)] <- "none"
+df_rs$body_part <- factor(df_rs$body_part, levels = c("none", 
+                                                      "rest", 
+                                                      "illness",
+                                                      "finger",
+                                                      "hand",
+                                                      "face",
+                                                      "arm",
+                                                      "shoulder",
+                                                      "neck",
+                                                      "head",
+                                                      "torso",
+                                                      "back",
+                                                      "leg",
+                                                      "foot",
+                                                      "toe",
+                                                      "ankle",
+                                                      "groin",
+                                                      "hip",
+                                                      "knee",
+                                                      "achilles"), ordered = TRUE )
+
+df_ps$body_part <- factor(df_ps$body_part, levels = c("none", 
+                                                      "rest", 
+                                                      "illness",
+                                                      "finger",
+                                                      "hand",
+                                                      "face",
+                                                      "arm",
+                                                      "shoulder",
+                                                      "neck",
+                                                      "head",
+                                                      "torso",
+                                                      "back",
+                                                      "leg",
+                                                      "foot",
+                                                      "toe",
+                                                      "ankle",
+                                                      "groin",
+                                                      "hip",
+                                                      "knee",
+                                                      "achilles"), ordered = TRUE )
 
 
+df_rs$injury_level <- as.numeric(factor(df_rs$body_part))
+df_ps$injury_level <- as.numeric(factor(df_ps$body_part))
 
+df_rs_combine <- aggregate(injury_level ~ join_c, FUN = mean, df_rs)
+df_rs_combine$injury_level <- round(df_rs_combine$injury_level, digits = 2) 
+
+df_ps_combine <- aggregate(injury_level ~ join_c, FUN = mean, df_ps)
+df_ps_combine$injury_level <- round(df_ps_combine$injury_level, digits = 2)
+
+# create the dataframes that I will use for further analysis:
+df_rs_final <- left_join(rs_playerstats_1020, df_rs_combine, by = "join_c") %>% select(1:22,27,29,30,35,38)
+df_ps_final <- left_join(ps_playerstats_1020, df_ps_combine, by = "join_c") %>% select(1:22,27,29,30,35,38)
+df_rs_aver_final <- left_join(rs_aver_playerstats_1020, df_rs_combine, by = "join_c") 
+df_ps_aver_final <- left_join(ps_aver_playerstats_1020, df_ps_combine, by = "join_c")
+ 
