@@ -155,3 +155,12 @@ weight_il <- ggplot(df_rs_aver_final, aes(x = weight_kg , y = injury_level, colo
         axis.title=element_text(size=15,face="bold"), axis.text.x = element_text(angle = 45, hjust=1))
 
 
+
+ggplot(df_rs_aver_final,aes(y= Season, x = X3PAPG ,  fill=Season)) +
+  geom_density_ridges(alpha=0.6, stat="binline", bins=20) +
+  theme_ridges() +
+  theme(
+    legend.position="none",
+    panel.spacing = unit(0.7, "lines"),
+    strip.text.x = element_text(size = 8)
+  )

@@ -17,11 +17,13 @@ df_rs_aver_final <- read.csv("df_final.csv")
 
 ## Abstract:
 
-The National Basketball Association (NBA) is a professional basketball league in North America. The league is composed of 30 teams (29 in the United States and 1 in Canada) and is one of the four major professional sports leagues in the United States and Canada. It is the premier men's professional basketball league in the world. The league was founded in New York City on June 6, 1946, as the Basketball Association of America (BAA). It changed its name to the National Basketball Association on August 3, 1949, after merging with the competing National Basketball League (NBL). The NBA regular season runs from October to April, with each team playing 82 games. As the premier professional basketball league in the world, the change in style of basketball in the NBA led to the change in style of modern basketball. Here rises problems: Which technical statistics best captures the changing style of modern basketball and how these statistics determine the injury situation for players of each season? To address those problems. I use Exploratory Data Analysis to find the factor(Average number of 3 points attempt per game) related to the change of play style and use some statistics to build a multilevel model. However, the model shows that the variables all have a slight impact on the injury situation for each player and is slightly different between Seasons as the style of basketball changes as time passes. This report consisted of 5 main parts: Introduction, Method, Result and Discussion. 
+The National Basketball Association (NBA) is a professional basketball league in North America. The league is composed of 30 teams (29 in the United States and 1 in Canada) and is one of the four major professional sports leagues in the United States and Canada. It is the premier men's professional basketball league in the world. The league was founded in New York City on June 6, 1946, as the Basketball Association of America (BAA). It changed its name to the National Basketball Association on August 3, 1949, after merging with the competing National Basketball League (NBL). The NBA's regular season runs from October to April, with each team playing 82 games. As the premier professional basketball league in the world, the change in style of basketball in the NBA led to the change in style of modern basketball. Here rises problems: Which statistical data of basketball best captures the changing style of modern basketball and how these types of data determine the injury situation for players of each season in today's style of basketball? To address those problems. I use Exploratory Data Analysis to find the factors related to the change of play style and use some statistics to build a multilevel model. However, the model shows that the variables all have a slight impact on the injury situation for each player and is slightly different between seasons as the style of basketball changes as time passes. This report consisted of 5 main parts: Introduction, Method, Result and Discussion. 
 
 ## Introduction:
 
+The game of basketball has worldwide appeal. It requires speed, athleticism, skill and the ability to stay calm in the most hectic moments of the game. Basketball has undergone many changes since James Naismith invented the game to give his students something to do when the cold weather prevented them from playing sports outside. As the representative basketball league in the world, in order to gradually improve the ornamental and competitive basketball. The NBA has gone through several landmark rule changes. These rule changes have directly or indirectly affected the development and style of basketball. For example, the establishment of the 3-point line, the establishment of the defensive 3-second violation, the expansion of the 3-second zone, etc. From my point of view, two changes contributed to the style of basketball now, the first one is setting the hand check as a blocking foul outside the 3-point line and the second is the establishment of the 3-point line. The hand check is a defensive maneuver that is made on the ball-handler. When a defender would extend an arm and use his hand to initiate contact with the ball-handler. Without defenders using their hands to initiate contact outside the 3-point line, players nowadays have more space to take a relatively more efficient offensive choice: shoot 3-point. I will present how the average number of 3 point attempts per game change from the Season 2010 - 2011 to the Season 2019 - 2020.
 
+Therefore I use a multilevel model to see what and how factors may influence the injury level of a player in a season. Before that, I clean the data and combine some information collected from YouTube for the same talk video.
 
 ## Method
 
@@ -64,8 +66,8 @@ mpg_il <- ggplot(df_rs_aver_final, aes(x = MPG , y = injury_level, color = Seaso
   ggtitle("Minutes play per game vs. Injury Level")+
   xlab("Minutes play per game")+
   ylab("Injury Level")+
-  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=12,face="bold"),axis.text=element_text(size=12,face="bold"),
-        axis.title=element_text(size=12,face="bold"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom")
+  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=12),axis.text=element_text(size=12),
+        axis.title=element_text(size=12), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "none")
 
 # GP vs. injury_level:
 gp_il <- ggplot(df_rs_aver_final, aes(x = GP , y = injury_level, color = Season))+
@@ -76,8 +78,8 @@ gp_il <- ggplot(df_rs_aver_final, aes(x = GP , y = injury_level, color = Season)
   ggtitle("Number of Games played in a Season vs. Injury Level")+
   xlab("Number of Games in a Season")+
   ylab("Injury Level")+
-  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=12,face="bold"),axis.text=element_text(size=12,face="bold"),
-        axis.title=element_text(size=12,face="bold"), axis.text.x = element_text(angle = 45, hjust=1),legend.position = "bottom")
+  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=12),axis.text=element_text(size=12),
+        axis.title=element_text(size=12), axis.text.x = element_text(angle = 45, hjust=1))
 
 # X3PAPG vs. injury_level:
 x3papg_il <- ggplot(df_rs_aver_final, aes(x = X3PAPG , y = injury_level, color = Season))+
@@ -88,8 +90,8 @@ x3papg_il <- ggplot(df_rs_aver_final, aes(x = X3PAPG , y = injury_level, color =
   ggtitle("Number of 3 points attempts per game vs. Injury Level")+
   xlab("Number of 3 points attempts per gam")+
   ylab("Injury Level")+
-  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=12,face="bold"),axis.text=element_text(size=12,face="bold"),
-        axis.title=element_text(size=12,face="bold"), axis.text.x = element_text(angle = 45, hjust=1),legend.position = "bottom")
+  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=12),axis.text=element_text(size=12),
+        axis.title=element_text(size=12), axis.text.x = element_text(angle = 45, hjust=1),legend.position = "none")
 
 # PFPG vs. injury_level:
 
@@ -101,14 +103,18 @@ pfpg_il <- ggplot(df_rs_aver_final, aes(x = PFPG , y = injury_level, color = Sea
   ggtitle("Number of personal fouls per game vs. Injury Level")+
   xlab("Number of personal fouls per game")+
   ylab("Injury Level")+
-  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=12,face="bold"),axis.text=element_text(size=12,face="bold"),
-        axis.title=element_text(size=12,face="bold"), axis.text.x = element_text(angle = 45, hjust=1),legend.position = "bottom")
-
-mpg_il
-gp_il
-x3papg_il
-pfpg_il
+  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=12),axis.text=element_text(size=12), axis.title=element_text(size=12), axis.text.x = element_text(angle = 45, hjust=1))
 ```
+
+
+```{r}
+grid.arrange(mpg_il,gp_il, nrow=1)
+```
+
+```{r}
+grid.arrange(x3papg_il,pfpg_il, nrow = 1)
+```
+
 
 
 ### Model Fitting:
@@ -141,9 +147,7 @@ fit1 <- lmer(injury_level ~ height_cm + weight_kg + Age + MPG + X3PAPG + GP + PF
 ```{r echo=FALSE, fig.cap="Residual plot and Q-Q plot."}
 re <- plot(fit1)
 qq <- qqmath(fit1)
-#grid.arrange(re,qq,nrow=1)
-re
-qq
+grid.arrange(re,qq,nrow=1)
 ```
 
 
@@ -161,7 +165,10 @@ ggplot(data.frame(lev=hatvalues(fit1),pearson=residuals(fit1,type="pearson")),
 
 ## Citation:
 
-
+https://www.sportsrec.com/358083-the-history-of-basketball-for-kids.html
+https://dunkorthree.com/hand-checking-rule-nba/
+https://www.kaggle.com/justinas/nba-players-data
+https://www.kaggle.com/ghopkins/nba-injuries-2010-2018
 
 
 
