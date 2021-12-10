@@ -7,7 +7,7 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = F,message = F,echo=F,highlight=F)
-knitr::opts_chunk$set(fig.width=6, fig.height=4,fig.align = "center") 
+knitr::opts_chunk$set(fig.width=7, fig.height=5,fig.align = "center") 
 pacman::p_load("tidyverse","tidyr","knitr","dplyr","viridis","hrbrthemes","mosaic","readr","lubridate","tibble","lme4","rstanarm","gridExtra")
 ```
 
@@ -64,8 +64,8 @@ mpg_il <- ggplot(df_rs_aver_final, aes(x = MPG , y = injury_level, color = Seaso
   ggtitle("Minutes play per game vs. Injury Level")+
   xlab("Minutes play per game")+
   ylab("Injury Level")+
-  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=15,face="bold"),axis.text=element_text(size=15,face="bold"),
-        axis.title=element_text(size=15,face="bold"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom")
+  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=12,face="bold"),axis.text=element_text(size=12,face="bold"),
+        axis.title=element_text(size=12,face="bold"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom")
 
 # GP vs. injury_level:
 gp_il <- ggplot(df_rs_aver_final, aes(x = GP , y = injury_level, color = Season))+
@@ -76,8 +76,8 @@ gp_il <- ggplot(df_rs_aver_final, aes(x = GP , y = injury_level, color = Season)
   ggtitle("Number of Games played in a Season vs. Injury Level")+
   xlab("Number of Games in a Season")+
   ylab("Injury Level")+
-  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=15,face="bold"),axis.text=element_text(size=15,face="bold"),
-        axis.title=element_text(size=15,face="bold"), axis.text.x = element_text(angle = 45, hjust=1),legend.position = "bottom")
+  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=12,face="bold"),axis.text=element_text(size=12,face="bold"),
+        axis.title=element_text(size=12,face="bold"), axis.text.x = element_text(angle = 45, hjust=1),legend.position = "bottom")
 
 # X3PAPG vs. injury_level:
 x3papg_il <- ggplot(df_rs_aver_final, aes(x = X3PAPG , y = injury_level, color = Season))+
@@ -88,8 +88,8 @@ x3papg_il <- ggplot(df_rs_aver_final, aes(x = X3PAPG , y = injury_level, color =
   ggtitle("Number of 3 points attempts per game vs. Injury Level")+
   xlab("Number of 3 points attempts per gam")+
   ylab("Injury Level")+
-  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=15,face="bold"),axis.text=element_text(size=15,face="bold"),
-        axis.title=element_text(size=15,face="bold"), axis.text.x = element_text(angle = 45, hjust=1),legend.position = "bottom")
+  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=12,face="bold"),axis.text=element_text(size=12,face="bold"),
+        axis.title=element_text(size=12,face="bold"), axis.text.x = element_text(angle = 45, hjust=1),legend.position = "bottom")
 
 # PFPG vs. injury_level:
 
@@ -101,8 +101,8 @@ pfpg_il <- ggplot(df_rs_aver_final, aes(x = PFPG , y = injury_level, color = Sea
   ggtitle("Number of personal fouls per game vs. Injury Level")+
   xlab("Number of personal fouls per game")+
   ylab("Injury Level")+
-  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=15,face="bold"),axis.text=element_text(size=15,face="bold"),
-        axis.title=element_text(size=15,face="bold"), axis.text.x = element_text(angle = 45, hjust=1),legend.position = "bottom")
+  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=12,face="bold"),axis.text=element_text(size=12,face="bold"),
+        axis.title=element_text(size=12,face="bold"), axis.text.x = element_text(angle = 45, hjust=1),legend.position = "bottom")
 
 mpg_il
 gp_il
@@ -138,15 +138,17 @@ fit1 <- lmer(injury_level ~ height_cm + weight_kg + Age + MPG + X3PAPG + GP + PF
 
 ### Model Validation:
 
-```{r echo=FALSE, fig.height=2.5, fig.width=6, fig.cap="Residual plot and Q-Q plot."}
+```{r echo=FALSE, fig.cap="Residual plot and Q-Q plot."}
 re <- plot(fit1)
 qq <- qqmath(fit1)
-grid.arrange(re,qq,nrow=1)
+#grid.arrange(re,qq,nrow=1)
+re
+qq
 ```
 
 
 
-```{r echo=FALSE,fig.height=2, fig.width=4, fig.cap="Residuals vs Leverage."}
+```{r echo=FALSE, fig.cap="Residuals vs Leverage."}
 ggplot(data.frame(lev=hatvalues(fit1),pearson=residuals(fit1,type="pearson")),
       aes(x=lev,y=pearson)) +
     geom_point() +
