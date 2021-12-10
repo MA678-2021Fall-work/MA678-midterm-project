@@ -141,7 +141,7 @@ fit1 <- lmer(injury_level ~ height_cm + weight_kg + Age + MPG + X3PAPG + GP + PF
 ```{r echo=FALSE, fig.height=2.5, fig.width=6, fig.cap="Residual plot and Q-Q plot."}
 re <- plot(fit1)
 qq <- qqmath(fit1)
-grid.arrange(re,qq,nrow=2)
+grid.arrange(re,qq,nrow=1)
 ```
 
 
