@@ -348,6 +348,9 @@ df_ps_aver_final$Season <- as.factor(df_ps_aver_final$Season)
 df_ps_aver_final$Stage <- as.factor(df_ps_aver_final$Stage)
 
 
+no_1617 <- subset(df_rs_aver_final, df_rs_aver_final$Season != "2016 - 2017")
 
+write.csv(df_rs_aver_final, "df_final.csv", row.names = F)
+read.csv("df_final.csv")
 
 

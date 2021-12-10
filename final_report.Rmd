@@ -6,18 +6,18 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(warning=F,message = F,echo=F,highlight=F)
-knitr::opts_chunk$set(fig.width=8, fig.height=6,fig.align = "center") 
+knitr::opts_chunk$set(warning = F,message = F,echo=F,highlight=F)
+knitr::opts_chunk$set(fig.width=6, fig.height=4,fig.align = "center") 
 pacman::p_load("tidyverse","tidyr","knitr","dplyr","viridis","hrbrthemes","mosaic","readr","lubridate","tibble","lme4","rstanarm","gridExtra")
 ```
 
 ```{r}
-source("data_clean_wrangle.R")
-source("visual_functions.R")
+df_rs_aver_final <- read.csv("df_final.csv")
 ```
 
 ## Abstract:
 
+The National Basketball Association (NBA) is a professional basketball league in North America. The league is composed of 30 teams (29 in the United States and 1 in Canada) and is one of the four major professional sports leagues in the United States and Canada. It is the premier men's professional basketball league in the world. The league was founded in New York City on June 6, 1946, as the Basketball Association of America (BAA). It changed its name to the National Basketball Association on August 3, 1949, after merging with the competing National Basketball League (NBL). The NBA regular season runs from October to April, with each team playing 82 games. As the premier professional basketball league in the world, the change in style of basketball in the NBA led to the change in style of modern basketball. Here rises problems: Which technical statistics best captures the changing style of modern basketball and how these statistics determine the injury situation for players of each season? To address those problems. I use Exploratory Data Analysis to find the factor(Average number of 3 points attempt per game) related to the change of play style and use some statistics to build a multilevel model. However, the model shows that the variables all have a slight impact on the injury situation for each player and is slightly different between Seasons as the style of basketball changes as time passes. This report consisted of 5 main parts: Introduction, Method, Result and Discussion. 
 
 ## Introduction:
 
@@ -28,12 +28,88 @@ source("visual_functions.R")
 ### Data Cleaning and Processing:
 
 
+| Column Names | Explanation |
+| :--: | :----- |
+| Season        | NBA regular season year range |
+| Age           | Player's Age |
+| PER           | Player Efficiency Rating |
+| GP            | The number of games a player play in a season |
+| MPG           | Average minutes a player play per game |
+| PFPG          | Average number of personal fouls per game |
+| X3PAPG        | Average number of 3 points attempt per game |
+| height_cm     | Player's height in centimeter |
+| weight_kg     | Player's weight in kilogram |
+| injury_level  | A level summarizes the injury situation for each player of each season |
+
+
 
 ### Exploratory Data Analysis:
 
 ```{r}
-#three_point_attempt_plot(df_rs_aver_final) + ggtitle("Number of 3 Points attempt per game distribution from season 2010-2011 to season 2019-2020")
+ggplot(df_rs_aver_final, aes(x = Season, y = X3PAPG, fill = Season)) +
+    geom_violin(size=0.5)+
+    geom_boxplot(width=0.5, alpha=0.5)+
+    scale_fill_viridis(discrete = TRUE, alpha=0.2, option = "D")+
+  theme_bw()+
+  theme(legend.position="none",plot.title = element_text(size=15))+ggtitle("Number of 3 Points attempt per game distribution from season 2010-2011 to season 2019-2020")
 ```
+
+```{r}
+# MPG vs. injury_level:
+mpg_il <- ggplot(df_rs_aver_final, aes(x = MPG , y = injury_level, color = Season))+
+  geom_point(alpha = 0.3)+
+  geom_smooth(method = "loess", formula = "y~x",se = F)+
+  scale_fill_viridis(discrete = TRUE, alpha=0.2, option = "D")+
+  theme_bw()+
+  ggtitle("Minutes play per game vs. Injury Level")+
+  xlab("Minutes play per game")+
+  ylab("Injury Level")+
+  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=15,face="bold"),axis.text=element_text(size=15,face="bold"),
+        axis.title=element_text(size=15,face="bold"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom")
+
+# GP vs. injury_level:
+gp_il <- ggplot(df_rs_aver_final, aes(x = GP , y = injury_level, color = Season))+
+  geom_point(alpha = 0.3)+
+  geom_smooth(method = "loess", formula = "y~x",se = F)+
+  scale_fill_viridis(discrete = TRUE, alpha=0.2, option = "D")+
+  theme_bw()+
+  ggtitle("Number of Games played in a Season vs. Injury Level")+
+  xlab("Number of Games in a Season")+
+  ylab("Injury Level")+
+  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=15,face="bold"),axis.text=element_text(size=15,face="bold"),
+        axis.title=element_text(size=15,face="bold"), axis.text.x = element_text(angle = 45, hjust=1),legend.position = "bottom")
+
+# X3PAPG vs. injury_level:
+x3papg_il <- ggplot(df_rs_aver_final, aes(x = X3PAPG , y = injury_level, color = Season))+
+  geom_point(alpha = 0.3)+
+  geom_smooth(method = "loess", formula = "y~x",se = F)+
+  scale_fill_viridis(discrete = TRUE, alpha=0.2, option = "D")+
+  theme_bw()+
+  ggtitle("Number of 3 points attempts per game vs. Injury Level")+
+  xlab("Number of 3 points attempts per gam")+
+  ylab("Injury Level")+
+  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=15,face="bold"),axis.text=element_text(size=15,face="bold"),
+        axis.title=element_text(size=15,face="bold"), axis.text.x = element_text(angle = 45, hjust=1),legend.position = "bottom")
+
+# PFPG vs. injury_level:
+
+pfpg_il <- ggplot(df_rs_aver_final, aes(x = PFPG , y = injury_level, color = Season))+
+  geom_point(alpha = 0.3)+
+  geom_smooth(method = "loess", formula = "y~x",se = F)+
+  scale_fill_viridis(discrete = TRUE, alpha=0.2, option = "D")+
+  theme_bw()+
+  ggtitle("Number of personal fouls per game vs. Injury Level")+
+  xlab("Number of personal fouls per game")+
+  ylab("Injury Level")+
+  theme(legend.key.size = unit(1, 'cm'), legend.text = element_text(size=15,face="bold"),axis.text=element_text(size=15,face="bold"),
+        axis.title=element_text(size=15,face="bold"), axis.text.x = element_text(angle = 45, hjust=1),legend.position = "bottom")
+
+mpg_il
+gp_il
+x3papg_il
+pfpg_il
+```
+
 
 ### Model Fitting:
 
@@ -42,15 +118,20 @@ source("visual_functions.R")
 
 # Model build:
 
+We can conclude that the formula:
+
+$$
+Injury Level = 9.93 + 0.014 {\times} height_{cm} + 0.013 {\times} weight_{kg} - 0.0016 {\times} Age + 0.14 {\times} MPG + 0.041 {\times} X3PAPG - 0.16 {\times} GP +  0.38 {\times} PFPG + 0.024 {\times} PER
+$$
+
 Indicator select:
 Season, MPG, GP, PFPG, X3PAPG, height_cm, weight_kg, Age, PER, PFPG
 
 ```{r}
 # Standardize the outcome:
 fit1 <- lmer(injury_level ~ height_cm + weight_kg + Age + MPG + X3PAPG + GP + PFPG + PER + (1|Season), df_rs_aver_final) 
-
-summary(fit1)
-coefficients(fit1)
+#summary(fit1)
+#coefficients(fit1)
 ```
 
 
@@ -60,7 +141,7 @@ coefficients(fit1)
 ```{r echo=FALSE, fig.height=2.5, fig.width=6, fig.cap="Residual plot and Q-Q plot."}
 re <- plot(fit1)
 qq <- qqmath(fit1)
-grid.arrange(re,qq,nrow=1)
+grid.arrange(re,qq,nrow=2)
 ```
 
 
