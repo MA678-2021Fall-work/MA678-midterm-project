@@ -35,26 +35,39 @@ To clean the stats dataset:
 Firstly, I subset the original dataset by only selecting players who played for NBA from the season 2010-2011 to the season 2019-2020; Secondly, I created a new variable age to store every player's age at that time because I think age is one of important factors that have effect on the average injuries level for players and it can be a factor to distinguish same player from different seasons; Thirdly, I calculate average stats for every players for each season and store them in a new dataset because from my perspective, using average data as factors can more intuitively show how the players' court performance will change with the change of basketball style. Using aggregate data is too general, and if these averages are a significant factor in the season's injury levels, then more detailed adjustments can be made to players' performance to prevent potential injuries; Finally, I separate my dataset into Regular Season and Playoffs and paste season and players name to a new variable join_c to prepare for joining datasets.
 
 To clean the injuries dataset:
-Firstly, I classify each injury by body part; Secondly, I standardize dates and summarize all the date into 10 seasons; Thirdly, paste season and players name to a new variable join_c to prepare for joining datasets.
+Firstly, I classify each injury by body part; Secondly, I standardize dates and summarize all the dates into 10 seasons; Thirdly, paste season and players name columns to a new variable join_c to prepare for the joining of datasets.
 
 To wrangle datasets for further analysis:
-After I cleaned two datasets, I left join them together by the variable: join_c and select the variables that I need for further analysis. 
+After I cleaned two datasets, I left join them together by the variable: join_c and select the variables that I need for further analysis. And I also assigned levels for injuries according to the standard estimated recovery time and calculated average injury level for each player by generate the mean levels for injuries each season. Below is the table for injury level corresponding to each injury body part:
 
-Here are some explanations of variables:
+| Injury body part | Injury level |Injury body part | Injury level | 
+| :--:             |:---:         |:--:             |:---:         |
+| None             | 1            | Torso           | 11           |
+| Rest             | 2            | Back            | 12           |                 
+| Illness          | 3            | Leg             | 13           |
+| Finger           | 4            | Foot            | 14           |
+| Hand             | 5            | Toe             | 15           |
+| Face             | 6            | Ankle           | 16           |
+| Arm              | 7            | Groin           | 17           |
+| Shoulder         | 8            | Hip             | 18           |
+| Neck             | 9            | Knee            | 19           |          
+| Head             | 10           | Achilles        | 20           |
 
+
+And here are some explanations of variables:
 
 | Variable Names | Explanation |
-| :--: | :----- |
-| Season        | NBA regular season year range |
-| Age           | Player's Age |
-| PER           | Player Efficiency Rating |
-| GP            | The number of games a player play in a season |
-| MPG           | Average minutes a player play per game |
-| PFPG          | Average number of personal fouls per game |
-| X3PAPG        | Average number of 3 points attempt per game |
-| height_cm     | Player's height in centimeter |
-| weight_kg     | Player's weight in kilogram |
-| injury_level  | A level summarizes the average injuries situation for each player of each season |
+| :--:           | :-----      |
+| Season         | NBA regular season year range |
+| Age            | Player's Age |
+| PER            | Player Efficiency Rating |
+| GP             | The number of games a player play in a season |
+| MPG            | Average minutes a player play per game |
+| PFPG           | Average number of personal fouls per game |
+| X3PAPG         | Average number of 3 points attempt per game |
+| height_cm      | Player's height in centimeter |
+| weight_kg      | Player's weight in kilogram |
+| injury_level   | A level summarizes the average injuries situation for each player of each season |
 
 
 
@@ -198,10 +211,10 @@ ggplot(data.frame(lev=hatvalues(fit1),pearson=residuals(fit1,type="pearson")),
 
 ## Citation:
 
-https://www.sportsrec.com/358083-the-history-of-basketball-for-kids.html
-https://dunkorthree.com/hand-checking-rule-nba/
-https://www.kaggle.com/jacobbaruch/basketball-players-stats-per-season-49-leagues
-https://www.kaggle.com/ghopkins/nba-injuries-2010-2018
+1. https://www.sportsrec.com/358083-the-history-of-basketball-for-kids.html
+2. https://dunkorthree.com/hand-checking-rule-nba/
+3. https://www.kaggle.com/jacobbaruch/basketball-players-stats-per-season-49-leagues
+4. https://www.kaggle.com/ghopkins/nba-injuries-2010-2018
 
 
 
