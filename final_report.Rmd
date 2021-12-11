@@ -32,7 +32,7 @@ Therefore I use a multilevel model to see what and how factors may influence the
 The main data set is published on [Kaggle: Basketball Players Stats per Season - 49 Leagues](https://www.kaggle.com/jacobbaruch/basketball-players-stats-per-season-49-leagues) includes 11,000 players details and stats per Season from the 1999-2000 season through the 2019-2020 season. And in order to analyze the injury situation for players, I also found a data set on [Kaggle: NBA Injuries from 2010-2020](https://www.kaggle.com/ghopkins/nba-injuries-2010-2018) includes detail on every injury in the NBA from the beginning of the 2010-2011 season through the end of the 2019-2020 season. 
 
 To clean the stats dataset:
-Firstly, I subset the original dataset by only selecting players who played for NBA from the season 2010-2011 to the season 2019-2020; Secondly, I created a new variable age to store every player's age at that time because I think age is one of important factors that have effect on the average injuries level for players and it can be a factor to distinguish same player from different seasons; Thirdly, I calculate average stats for every players for each season and store them in a new dataset because from my perspective, using average data as factors can more intuitively show how the players' court performance will change with the change of basketball style. Using aggregate data is too general, and if these averages are a significant factor in the season's injury levels, then more detailed adjustments can be made to players' performance to prevent potential injuries; Finally, I separate my dataset into Regular Season and Playoffs and paste season and players name to a new variable join_c to prepare for joining datasets.
+Firstly, I subset the original dataset by only selecting players who played for NBA from the season 2010-2011 to the season 2019-2020; Secondly, I created a new variable age to store every player's age at that time because I think age is one of important factors that have effect on the average injuries level for players and it can be a factor to distinguish same player from different seasons; Thirdly, I calculate average stats for every players for each season and store them in a new dataset because from my perspective, using average data as factors can more intuitively show how the players' court performance will change with the change of basketball style. Using aggregate data is too general, and if these averages are a significant factor in the season's injury levels, then more detailed adjustments can be made to players' performance to prevent potential injuries; Finally, I separate my dataset into Regular Season and Playoffs and paste season and players name to a new variable join_c to prepare for joining datasets. I will only focus on the regular season.
 
 To clean the injuries dataset:
 Firstly, I classify each injury by body part; Secondly, I standardize dates and summarize all the dates into 10 seasons; Thirdly, paste season and players name columns to a new variable join_c to prepare for the joining of datasets.
@@ -69,11 +69,11 @@ And here are some explanations of variables:
 | weight_kg      | Player's weight in kilogram |
 | injury_level   | A level summarizes the average injuries situation for each player of each season |
 
-
+Then, the final version of my cleaned dataset has 2399 observations and 30 variables. I will only choose the variables I listed above for my further analysis.
 
 ### Exploratory Data Analysis:
 
-```{r}
+```{r, fig.cap= "Number of 3 Points attempt per game distribution from season 2010-2011 to season 2019-2020"}
 df_mean <- df_rs_aver_final %>% 
   group_by(Season) %>% 
   summarize(average = mean(X3PAPG)) %>%
@@ -92,8 +92,7 @@ ggplot(df_rs_aver_final, aes(x = Season, y = X3PAPG, fill = Season)) +
   theme_bw()+
   theme(legend.position="none",
         plot.title = element_text(size=15),
-        axis.text=element_text(size=12))+
-  ggtitle("Number of 3 Points attempt per game distribution from season 2010-2011 to season 2019-2020")
+        axis.text=element_text(size=12))
 ```
 
 
@@ -153,11 +152,11 @@ pfpg_il <- ggplot(df_rs_aver_final, aes(x = PFPG , y = injury_level, color = Sea
 ```
 
 
-```{r}
+```{r fig.cap="Correlation between the playing time per season and the average injury level"}
 grid.arrange(mpg_il,gp_il, nrow=1)
 ```
 
-```{r}
+```{r, fig.cap="Correlation between some of the avaerga stats per season and the average injury level"}
 grid.arrange(x3papg_il,pfpg_il, nrow = 1)
 ```
 
