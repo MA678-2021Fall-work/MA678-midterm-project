@@ -69,9 +69,11 @@ And here are some explanations of variables:
 | weight_kg      | Player's weight in kilogram |
 | injury_level   | A level summarizes the average injuries situation for each player of each season |
 
-Then, the final version of my cleaned dataset has 2399 observations and 30 variables. I will only choose the variables I listed above for my further analysis.
+Then, the final version of my cleaned dataset has $2399$ observations and $30$ variables. I will only choose the variables I listed above for my further analysis.
 
 ### Exploratory Data Analysis:
+
+For the first step of my exploratory data analysis, I present the change of number of 3 point attempt per game for each players from the season 2010-2011 to the season 2019-2020. In order to show the trend of change more intuitively, I use violin and boxplot to show the distribution per season and use an arrow to connect each mean point to show the changing trend. We can conclude from the boxplot in Figure. 1, the number of three-point attempts is steadily increasing and there is a clear trend of growth start from the season 2014-2015. And there's a steady stream of players averaging more than 10 three-point attempts per game in a season. For the violin plot, we can conclude that more and more players began to attempt the 3-point shot in the game and gradually made the 3-point shot a regular scoring option. Now we know that shooting more three-pointers is a game changing trend for today's basketball game. However, how this factor affect the average injuries level for a player? Let's explore more plot to select factors to build my multilevel model.
 
 ```{r, fig.cap= "Number of 3 Points attempt per game distribution from season 2010-2011 to season 2019-2020"}
 df_mean <- df_rs_aver_final %>% 
@@ -94,6 +96,15 @@ ggplot(df_rs_aver_final, aes(x = Season, y = X3PAPG, fill = Season)) +
         plot.title = element_text(size=15),
         axis.text=element_text(size=12))
 ```
+
+Because of the length of the report, I only picked four factors: `MPG`,`GP`,`X3PAPG` and `PFPG` to display their correlation with the average injuries level. I will use table to show the reason I choose those four factors:
+
+| Variable Names | Reason  |
+| :--:           | :-----  |
+| MPG            | Shows a player's fatigue per game|
+| GP             | Shows a player's fatigue per season|
+| X3PAPG         | The on-court statistics that best represent the evolution of modern basketball|
+| PFPG           | The contact during play time that is most likely to injure a player |
 
 
 ```{r}
@@ -172,10 +183,10 @@ grid.arrange(x3papg_il,pfpg_il, nrow = 1)
 We can conclude that the formula:
 
 $$
-Injury Level = 9.93 + 0.014 {\times} height_{cm} + 0.013 {\times} weight_{kg} - 0.0016 {\times} Age + 0.14 {\times} MPG + 0.041 {\times} X3PAPG - 0.16 {\times} GP +  0.38 {\times} PFPG + 0.024 {\times} PER
+Injury Level = 9.93 + 0.014 {\cdot} height_{cm} + 0.013 {\cdot} weight_{kg} - 0.0016 {\cdot} Age + 0.14 {\cdot} MPG + 0.041 {\cdot} X3PAPG - 0.16 {\cdot} GP +  0.38 {\cdot} PFPG + 0.024 {\cdot} PER
 $$
 
-Indicator select:
+Factors select:
 Season, MPG, GP, PFPG, X3PAPG, height_cm, weight_kg, Age, PER, PFPG
 
 ```{r}
