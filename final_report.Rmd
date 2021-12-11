@@ -54,21 +54,6 @@ After I cleaned two datasets, I left join them together by the variable: join_c 
 | Head             | 10           | Achilles        | 20           |
 
 
-And here are some explanations of variables:
-
-| Variable Names | Explanation |
-| :--:           | :-----      |
-| Season         | NBA regular season year range |
-| Age            | Player's Age |
-| PER            | Player Efficiency Rating |
-| GP             | The number of games a player play in a season |
-| MPG            | Average minutes a player play per game |
-| PFPG           | Average number of personal fouls per game |
-| X3PAPG         | Average number of 3 points attempt per game |
-| height_cm      | Player's height in centimeter |
-| weight_kg      | Player's weight in kilogram |
-| injury_level   | A level summarizes the average injuries situation for each player of each season |
-
 Then, the final version of my cleaned dataset has $2399$ observations and $30$ variables. I will only choose the variables I listed above for my further analysis.
 
 ### Exploratory Data Analysis:
@@ -99,12 +84,12 @@ ggplot(df_rs_aver_final, aes(x = Season, y = X3PAPG, fill = Season)) +
 
 Because of the length of the report, I only picked four factors: `MPG`,`GP`,`X3PAPG` and `PFPG` to display their correlation with the average injuries level. I will use table to show the reason I choose those four factors:
 
-| Variable Names | Reason  |
-| :--:           | :-----  |
-| MPG            | Shows a player's fatigue per game|
-| GP             | Shows a player's fatigue per season|
-| X3PAPG         | The on-court statistics that best represent the evolution of modern basketball|
-| PFPG           | The contact during play time that is most likely to injure a player |
+| Variable Names |Explanation | Reason  |
+| :--:           | :---:      | :-----  |
+| MPG            | Average minutes a player play per game        | Shows a player's fatigue per game|
+| GP             | The number of games a player play in a season | Shows a player's fatigue per season|
+| X3PAPG         | Average number of 3 points attempt per game   | The on-court statistics that best represent the evolution of modern basketball|
+| PFPG           | Average number of personal fouls per game     | The contact during play time that is most likely to injure a player |
 
 
 ```{r}
@@ -162,41 +147,53 @@ pfpg_il <- ggplot(df_rs_aver_final, aes(x = PFPG , y = injury_level, color = Sea
          axis.title=element_text(size=12))
 ```
 
-From Figure.2, although the relationships are not linear, we can conclude that as a player's fatigue index increases, his likelihood of serious injury increases.
 
 ```{r fig.cap="Correlation between the playing time per season and the average injury level"}
 grid.arrange(mpg_il,gp_il, nrow=1)
 ```
-
-From Figure.3, although the relationships are not linear, in a certain range, we can conclude that the average injury index has a positive impact with the number of 3-point attempts and the number of fouls. In other words, the more three-point attempts and personal fouls a player makes within a certain range, the more likely he is to suffer injuries.
 
 ```{r, fig.cap="Correlation between some of the avaerga stats per season and the average injury level"}
 grid.arrange(x3papg_il,pfpg_il, nrow = 1)
 ```
 
 
+From Figure.2, although the relationships are not linear, we can conclude that as a player's fatigue index increases, his likelihood of serious injury increases.
+
+From Figure.3, although the relationships are not linear, in a certain range, we can conclude that the average injury index has a positive impact with the number of 3-point attempts and the number of fouls. In other words, the more three-point attempts and personal fouls a player makes within a certain range, the more likely he is to suffer injuries. 
+
 
 ### Model Fitting:
-
 
 ## Result:
 
 # Model build:
 
-We can conclude that the formula:
+Here are explanations of variables I selected for model building:
+
+| Variable Names | Explanation |
+| :--:           | :-----      |
+| Season         | NBA regular season year range |
+| Age            | Player's Age |
+| PER            | Player Efficiency Rating |
+| GP             | The number of games a player play in a season |
+| MPG            | Average minutes a player play per game |
+| PFPG           | Average number of personal fouls per game |
+| X3PAPG         | Average number of 3 points attempt per game |
+| height_cm      | Player's height in centimeter |
+| weight_kg      | Player's weight in kilogram |
+| injury_level   | A level summarizes the average injuries situation for each player of each season |
+
+From the summary of my model, we can conclude that the formula:
 
 $$
 Injury Level = 9.93 + 0.014 {\cdot} height_{cm} + 0.013 {\cdot} weight_{kg} - 0.0016 {\cdot} Age + 0.14 {\cdot} MPG + 0.041 {\cdot} X3PAPG - 0.16 {\cdot} GP +  0.38 {\cdot} PFPG + 0.024 {\cdot} PER
 $$
 
-Factors select:
-Season, MPG, GP, PFPG, X3PAPG, height_cm, weight_kg, Age, PER, PFPG
-
 ```{r}
 # Standardize the outcome:
 fit1 <- lmer(injury_level ~ height_cm + weight_kg + Age + MPG + X3PAPG + GP + PFPG + PER + (1|Season), df_rs_aver_final) 
-summary(fit1)
-coefficients(fit1)
+#summary(fit1)
+#coefficients(fit1)
 ```
 
 
