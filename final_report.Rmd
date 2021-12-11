@@ -13,7 +13,6 @@ pacman::p_load("tidyverse","tidyr","knitr","dplyr","viridis","hrbrthemes","mosai
 
 ```{r}
 df_rs_aver_final <- read.csv("df_final.csv")
-df_rs_aver_final_sum <- read.csv("df_final_sum.csv")
 ```
 
 ## Abstract:
