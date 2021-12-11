@@ -319,6 +319,7 @@ df_ps$body_part <- factor(df_ps$body_part, levels = c("none",
 df_rs$injury_level <- as.numeric(factor(df_rs$body_part))
 df_ps$injury_level <- as.numeric(factor(df_ps$body_part))
 
+#mean injury level
 df_rs_combine <- aggregate(injury_level ~ join_c, FUN = mean, df_rs)
 df_rs_combine$injury_level <- round(df_rs_combine$injury_level, digits = 2) 
 
@@ -326,27 +327,12 @@ df_ps_combine <- aggregate(injury_level ~ join_c, FUN = mean, df_ps)
 df_ps_combine$injury_level <- round(df_ps_combine$injury_level, digits = 2)
 
 # create the dataframes that I will use for further analysis:
-df_rs_final <- left_join(rs_playerstats_1020, df_rs_combine, by = "join_c") %>% select(1:22,27,29,30,35,38)
-df_ps_final <- left_join(ps_playerstats_1020, df_ps_combine, by = "join_c") %>% select(1:22,27,29,30,35,38)
 df_rs_aver_final <- left_join(rs_aver_playerstats_1020, df_rs_combine, by = "join_c") 
 df_ps_aver_final <- left_join(ps_aver_playerstats_1020, df_ps_combine, by = "join_c")
-
-df_final <- rbind(df_rs_final, df_ps_final)
-df_aver_final <- rbind(df_rs_aver_final,df_ps_aver_final)
-
-df_final$Season <- as.factor(df_final$Season)
-df_final$Stage <- as.factor(df_final$Stage)
- 
-df_aver_final$Season <- as.factor(df_aver_final$Season)
-df_aver_final$Stage <- as.factor(df_aver_final$Stage)
 
 
 df_rs_aver_final$Season <- as.factor(df_rs_aver_final$Season)
 df_rs_aver_final$Stage <- as.factor(df_rs_aver_final$Stage)
-
-df_ps_aver_final$Season <- as.factor(df_ps_aver_final$Season)
-df_ps_aver_final$Stage <- as.factor(df_ps_aver_final$Stage)
-
 
 no_1617 <- subset(df_rs_aver_final, df_rs_aver_final$Season != "2016 - 2017")
 

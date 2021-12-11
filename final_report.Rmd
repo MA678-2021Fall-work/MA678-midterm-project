@@ -13,6 +13,7 @@ pacman::p_load("tidyverse","tidyr","knitr","dplyr","viridis","hrbrthemes","mosai
 
 ```{r}
 df_rs_aver_final <- read.csv("df_final.csv")
+df_rs_aver_final_sum <- read.csv("df_final_sum.csv")
 ```
 
 ## Abstract:
@@ -162,10 +163,13 @@ pfpg_il <- ggplot(df_rs_aver_final, aes(x = PFPG , y = injury_level, color = Sea
          axis.title=element_text(size=12))
 ```
 
+From Figure.2, although the relationships are not linear, we can conclude that as a player's fatigue index increases, his likelihood of serious injury increases.
 
 ```{r fig.cap="Correlation between the playing time per season and the average injury level"}
 grid.arrange(mpg_il,gp_il, nrow=1)
 ```
+
+From Figure.3, although the relationships are not linear, in a certain range, we can conclude that the average injury index has a positive impact with the number of 3-point attempts and the number of fouls. In other words, the more three-point attempts and personal fouls a player makes within a certain range, the more likely he is to suffer injuries.
 
 ```{r, fig.cap="Correlation between some of the avaerga stats per season and the average injury level"}
 grid.arrange(x3papg_il,pfpg_il, nrow = 1)
@@ -192,8 +196,8 @@ Season, MPG, GP, PFPG, X3PAPG, height_cm, weight_kg, Age, PER, PFPG
 ```{r}
 # Standardize the outcome:
 fit1 <- lmer(injury_level ~ height_cm + weight_kg + Age + MPG + X3PAPG + GP + PFPG + PER + (1|Season), df_rs_aver_final) 
-#summary(fit1)
-#coefficients(fit1)
+summary(fit1)
+coefficients(fit1)
 ```
 
 
