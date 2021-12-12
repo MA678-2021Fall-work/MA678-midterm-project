@@ -7,7 +7,7 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = F,message = F,echo=F,highlight=F)
-knitr::opts_chunk$set(fig.width = 12, fig.height = 5,fig.align = "center") 
+knitr::opts_chunk$set(fig.width = 12, fig.height = 4,fig.align = "center") 
 pacman::p_load("tidyverse","tidyr","knitr","dplyr","viridis","hrbrthemes","mosaic","readr","lubridate","tibble","lme4","rstanarm","gridExtra")
 ```
 
@@ -17,7 +17,7 @@ df_rs_aver_final <- read.csv("df_final.csv")
 
 ## Abstract:
 
-The National Basketball Association (NBA) is a professional basketball league in North America. The league is composed of 30 teams (29 in the United States and 1 in Canada) and is one of the four major professional sports leagues in the United States and Canada. It is the premier men's professional basketball league in the world. The league was founded in New York City on June 6, 1946, as the Basketball Association of America (BAA). It changed its name to the National Basketball Association on August 3, 1949, after merging with the competing National Basketball League (NBL). The NBA's regular season runs from October to April, with each team playing 82 games. As the premier professional basketball league in the world, the change in style of basketball in the NBA led to the change in style of modern basketball. Here rises problems: Which statistical data of basketball best captures the changing style of modern basketball and how these types of data determine the injury situation for players of each season in today's style of basketball? To address those problems. I use Exploratory Data Analysis to find the factors related to the change of play style and use some statistics to build a multilevel model. However, the model shows that the variables all have a slight impact on the injury situation for each player and is slightly different between seasons as the style of basketball changes as time passes. This report consisted of 6 main parts: Abstract, Introduction, Method, Result and Discussion. 
+The National Basketball Association (NBA) is a professional basketball league in North America. The league is composed of 30 teams (29 in the United States and 1 in Canada) and is one of the four major professional sports leagues in the United States and Canada. It is the premier men's professional basketball league in the world. The NBA regular season runs from October to April, with each team playing 82 games. As the premier professional basketball league in the world, the change in style of basketball in the NBA led to the change in style of modern basketball. Here rises problems: Which statistical data of basketball best captures the changing style of modern basketball and how these types of data determine the injury situation for players of each season in today's style of basketball? To address those problems. I use Exploratory Data Analysis to find the factors related to the change of play style and use some statistics to build a multilevel model. However, the model shows that the variables all have a slight impact on the injury situation for each player and is slightly different between seasons as the style of basketball changes as time passes. This report consisted of 6 main parts: Abstract, Introduction, Method, Result and Discussion. 
 
 ## Introduction:
 
@@ -32,9 +32,11 @@ Therefore I use a multilevel model to see what and how factors may influence the
 The main data set is published on [Kaggle: Basketball Players Stats per Season - 49 Leagues](https://www.kaggle.com/jacobbaruch/basketball-players-stats-per-season-49-leagues) includes 11,000 players details and stats per Season from the 1999-2000 season through the 2019-2020 season. And in order to analyze the injury situation for players, I also found a data set on [Kaggle: NBA Injuries from 2010-2020](https://www.kaggle.com/ghopkins/nba-injuries-2010-2018) includes detail on every injury in the NBA from the beginning of the 2010-2011 season through the end of the 2019-2020 season. 
 
 To clean the stats dataset:
+
 Firstly, I subset the original dataset by only selecting players who played for NBA from the season 2010-2011 to the season 2019-2020; Secondly, I created a new variable age to store every player's age at that time because I think age is one of important factors that have effect on the average injuries level for players and it can be a factor to distinguish same player from different seasons; Thirdly, I calculate average stats for every players for each season and store them in a new dataset because from my perspective, using average data as factors can more intuitively show how the players' court performance will change with the change of basketball style. Using aggregate data is too general, and if these averages are a significant factor in the season's injury levels, then more detailed adjustments can be made to players' performance to prevent potential injuries; Finally, I separate my dataset into Regular Season and Playoffs and paste season and players name to a new variable join_c to prepare for joining datasets. I will only focus on the regular season.
 
 To clean the injuries dataset:
+
 Firstly, I classify each injury by body part; Secondly, I standardize dates and summarize all the dates into 10 seasons; Thirdly, paste season and players name columns to a new variable join_c to prepare for the joining of datasets.
 
 To wrangle datasets for further analysis:
@@ -164,10 +166,6 @@ From Figure.3, although the relationships are not linear, in a certain range, we
 
 ### Model Fitting:
 
-## Result:
-
-# Model build:
-
 Here are explanations of variables I selected for model building:
 
 | Variable Names | Explanation |
@@ -183,41 +181,63 @@ Here are explanations of variables I selected for model building:
 | weight_kg      | Player's weight in kilogram |
 | injury_level   | A level summarizes the average injuries situation for each player of each season |
 
-From the summary of my model, we can conclude that the formula:
-
-$$
-Injury Level = 9.93 + 0.014 {\cdot} height_{cm} + 0.013 {\cdot} weight_{kg} - 0.0016 {\cdot} Age + 0.14 {\cdot} MPG + 0.041 {\cdot} X3PAPG - 0.16 {\cdot} GP +  0.38 {\cdot} PFPG + 0.024 {\cdot} PER
-$$
-
 ```{r}
 # Standardize the outcome:
 fit1 <- lmer(injury_level ~ height_cm + weight_kg + Age + MPG + X3PAPG + GP + PFPG + PER + (1|Season), df_rs_aver_final) 
 #summary(fit1)
 #coefficients(fit1)
+# extract coefficients
+coefs <- data.frame(coef(summary(fit1)))
+# use normal distribution to approximate p-value
+coefs$p.z <- 2 * (1 - pnorm(abs(coefs$t.value)))
 ```
 
+Considering different regular seasons, I will use multilevel model to fit the data. From EDA above, it is clear that for different seasons there are different correlations with variables I selected, so I use varying slope and varying intercept in multilevel models. Besides, just as I mentioned before, regular season will only be taken into account because I found that in the playoffs, players are more engaged and focused on recovery than they were during the regular season. And the playoff schedule is not as dense as the regular season. The players are rested and ready for every game. As a result, a majority of the injury level for playoffs subset equal to $1$, which means no injury. Below is the function:
 
+$$
+\begin{aligned}
+lmer(injury_level ~ height_cm + weight_kg + Age + MPG + X3PAPG + GP + PFPG + PER + (1|Season))
+\end{aligned}
+$$
 
-### Model Validation:
+And to see the fixed effects below, only the variable MPG is significant at alpha = 0.05 level, I use a table to show all the coefficients:
 
-```{r echo=FALSE, fig.cap="Residual plot and Q-Q plot."}
-re <- plot(fit1)
-qq <- qqmath(fit1)
-grid.arrange(re,qq,nrow=1)
-```
+\newpage
 
+|                |Estimate    |Std. Error     |t value  |Pr(>&#124;t&#124;)  |
+|:---:           |:---:       |:---:          |:---:    |:---:               |
+|(Intercept)     |9.931       |4.113          |2.415    |1.574e-02 ***       |
+|height_cm       |0.014       |0.025          |0.547    |5.843e-01 ***       |
+|weight_kg       |0.013       |0.019          |0.700    |4.837e-01 ***       |
+|Age             |-0.002      |0.029          |-0.056   |9.554e-01 ***       |
+|MPG             |0.141       |0.026          |5.376    |7.611e-08 ***       |
+|X3PAPG	         |0.0413      |0.074          |0.561 	  |5.750e-01 ***       |
+|GP	             |-0.156	    |0.015	        |-10.700  |0.000e+00 ***       |
+|PFPG	           |0.375	      |0.258	        |1.454    |1.460e-01 ***       |
+|PER	           |0.025	      |0.030 	        |0.820	  |4.125e-01 ***       |
 
+## Result
 
-```{r echo=FALSE, fig.cap="Residuals vs Leverage."}
-ggplot(data.frame(lev=hatvalues(fit1),pearson=residuals(fit1,type="pearson")),
-      aes(x=lev,y=pearson)) +
-    geom_point() +
-    theme_bw()
-```
+## Model Coefficients interpretation
+
+In order to interpret my model, I take an example here, for the season 2019-2020, we can conclude this formula: 
+$$
+\begin{aligned}
+Injury Level = 9.82 + 0.014\cdot height_{cm} + 0.013\cdot weight_{kg} - 0.0016\cdot Age \\ + 0.14\cdot MPG + 0.041\cdot X3PAPG - 0.16\cdot GP + 0.38\cdot PFPG + 0.025\cdot PER
+\end{aligned}
+$$
+
+Because generally speaking, injury is something that is difficult for a professional athlete to avoid, so it makes sense that intercept in the formula is positive. And $9.82$ is approximately the mid value of my injury level. And among 8 indicators, height, weight, minutes play per game, 3 points attempts per game, personal foul per game and player efficiency rating all have postive slopes, which means they all have positive impact on the average injuries level for each player. For each one unit difference in minutes play per game, the predicted difference in the average injuries level is 1$4\%$ with other indicators keep constant. In other words, if a player play for one more minutes per game in the season 2019-2020, his average injuries level will increase by $14\%$.
+
+And we can see from the table above, there is only one factor (minutes play per game) has significant effect to the average injuries level, which means that in the model I build, height, 3 points attempts per game, personal foul per game and player efficiency rating are not main effect to have influence on the average injuries level. I will show some plots for model validation in appendix.
 
 ## Discussion:
 
+The estimates are reasonable in some extents. From the player's individual body statistics, when a player with higher height, heavier weight, he would suffer some injury that need more time for recovery. And more 3-pointers a player shoot per season, the higher level of average injury the player will have. In other words, from my model, players are more likely to have injuries that needed longer time period for recovery in nowadays NBA games. My guess is, with today's style of basketball. With the increasing number of three-point shots, the pace of the game is getting faster as players can choose the relatively efficient means of scoring without having to go round after round to find a mid-range shot or attack to the basket. This increases the average number of runs a player can run and increases the likelihood of serious injuries. And the reason for other two positive affect factores player efficiency rating and personal fouls per game, my explanation is that the higher the efficiency of a player's game, the more it can reflect the player's abilities. Then the defensive pressure on the field of this player will be much higher than that of other players, which increases the possibility of serious injuries. In the same way, when a player averages more fouls per game, it means that his defensive enthusiasm will be relatively higher, which will also increase the possibility of serious injuries.
 
+The result of model almost matches well for different categories in EDA part, but there are still some problems. In EDA part we see that the regression lines are not all positive trend or negative trend. And for the season 2016-2017, the regression line is a horizontal line, which means there is some problems with injury data collected. The injury number is much smaller when compared to other seasons.  
+
+I only used eight variables to predict the outcome, but there are still some variables that may have big effects on the situation of injuries. And because the human body is involved, there will be many unstable factors. The data that can be collected from basketball games is very large. And for my outcome: injury level, I only assign the level according to the recovery time, the definition is a bit vague, which leads to my model not being able to locate useful factors efficiently. For further improvement, I will adjust the definition of my outcome and include more data in my analysis.
 
 ## Citation:
 
@@ -230,5 +250,88 @@ ggplot(data.frame(lev=hatvalues(fit1),pearson=residuals(fit1,type="pearson")),
 
 \newpage
 ## Appendix
+
+### Model Validation:
+
+```{r echo=FALSE, fig.cap = "Residual plot and Q-Q plot."}
+re <- plot(fit1)
+qq <- qqmath(fit1)
+grid.arrange(re,qq,nrow=1)
+```
+
+
+```{r echo=FALSE, fig.cap = "Residuals vs Leverage."}
+ggplot(data.frame(lev=hatvalues(fit1),pearson=residuals(fit1,type="pearson")),
+      aes(x=lev,y=pearson)) +
+    geom_point() +
+    theme_bw()
+```
+
+
 ### More EDA
+
+```{r}
+
+height_d <- ggplot(df_rs_aver_final, aes(x = height_cm, fill = Season))+
+  geom_bar(stat = "count", position = "dodge", alpha = 0.6, width = 3)+
+  facet_wrap(~Season)+
+  ggtitle("height(cm) distribution for each season")
+
+weight_d <- ggplot(df_rs_aver_final, aes(x = weight_kg, fill = Season))+
+  geom_area(stat = "count", position = "dodge", alpha = 0.6, width = 2)+
+  facet_wrap(~Season)+
+  ggtitle("weight(kg) distribution for each season")
+
+
+# height_cm vs. injury_level:
+
+h_plot <- ggplot(df_rs_aver_final, aes(x = height_cm , y = injury_level, color = Season))+
+  geom_point(alpha = 0.3)+
+  geom_smooth(method = "loess", formula = "y~x",se = F)+
+  scale_fill_viridis(discrete = TRUE, alpha=0.2, option = "D")+
+  theme_bw()+
+  ggtitle("Player's Height vs. Injury Level")+
+  xlab("Player's Height(cm)")+
+  ylab("Injury Level")+
+  theme(legend.text = element_text(size=12),
+        axis.text=element_text(size=12),
+        axis.title=element_text(size=12))
+
+# weight_kg vs. injury_level:
+
+w_plot <- ggplot(df_rs_aver_final, aes(x = weight_kg , y = injury_level, color = Season))+
+  geom_point(alpha = 0.3)+
+  geom_smooth(method = "loess", formula = "y~x",se = F)+
+  scale_fill_viridis(discrete = TRUE, alpha=0.2, option = "D")+
+  theme_bw()+
+  ggtitle("Player's Weight vs. Injury Level")+
+  xlab("Player's Weight(kg)")+
+  ylab("Injury Level")+
+  theme(legend.text = element_text(size=12),
+        axis.text=element_text(size=12),
+        axis.title=element_text(size=12))
+
+
+per <- ggplot(df_rs_aver_final, aes(x = Season, y = PER, fill = Season)) + 
+  geom_violin(size=0.5)+
+  geom_boxplot(width=0.5, alpha=0.5)+
+  scale_fill_viridis(discrete = TRUE, alpha=0.2, option = "D")+
+  theme_bw() +
+  theme(legend.position="none",plot.title = element_text(size=15))+
+  ggtitle("Player Efficiency rating distribution vs. seasons")
+  
+
+
+hist(df_rs_aver_final$injury_level)
+
+height_d
+weight_d
+h_plot
+w_plot
+per
+
+```
+
+
+
 
